@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Craft da Kali - Mimos em Pixel Art</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --cor-fundo: #fafafa; --cor-primaria: #ffb7b2; --cor-texto: #333333; --cor-texto-claro: #777; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Nunito', sans-serif; }
+        body { background-color: var(--cor-fundo); color: var(--cor-texto); background-image: radial-gradient(rgba(255, 183, 178, 0.3) 1px, transparent 1px); background-size: 25px 25px; }
+        header { background: linear-gradient(135deg, rgba(255, 209, 220, 0.8), rgba(255, 250, 205, 0.8), rgba(224, 255, 255, 0.8)); padding: 3rem 1rem; text-align: center; border-bottom: 3px solid white; backdrop-filter: blur(5px); }
+        .logo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: white;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            margin-bottom: 1rem;
+            border: 4px solid var(--cor-primaria);
+            object-fit: cover; /* <-- Adicione esta linha */
+        }
+        .bio-box { background: rgba(255, 255, 255, 0.85); max-width: 450px; margin: 0 auto; padding: 1.5rem; border-radius: 20px; text-align: left; font-size: 0.95rem; line-height: 1.8; box-shadow: 0 4px 15px rgba(0,0,0,0.04); }
+
+        .filtros { display: flex; justify-content: center; gap: 10px; margin: 2rem 0; flex-wrap: wrap; }
+        .btn-filtro { background: white; border: 2px solid #eee; padding: 8px 20px; border-radius: 25px; cursor: pointer; font-weight: 600; color: #666; transition: all 0.3s ease; }
+        .btn-filtro:hover, .btn-filtro.ativo { background: var(--cor-primaria); color: white; border-color: var(--cor-primaria); }
+
+        main { max-width: 1000px; margin: 0 auto 4rem; padding: 0 1.5rem; }
+        .section-title { text-align: center; margin: 3rem 0 2rem; color: #4a4a4a; font-size: 1.8rem; }
+        .produtos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 2rem; }
+        .produto-card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.03); display: flex; flex-direction: column; border: 1px solid #f0f0f0; }
+
+        /* Estilos da Galeria Carrossel */
+        .img-container {
+            width: 100%;
+            padding-top: 100%;
+            position: relative;
+            background-color: #f8f8f8;
+        }
+
+        .carrossel {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: none;
+        }
+
+        .carrossel::-webkit-scrollbar { display: none; }
+
+        .carrossel img {
+            flex: 0 0 100%;
+            scroll-snap-align: center;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .hint-arrastar {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            font-size: 0.7rem;
+            padding: 4px 8px;
+            border-radius: 12px;
+            pointer-events: none;
+            backdrop-filter: blur(2px);
+        }
+
+        .produto-info { padding: 1.5rem; display: flex; flex-direction: column; flex-grow: 1; }
+        .categoria-tag { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--cor-primaria); font-weight: bold; margin-bottom: 0.5rem; }
+        .produto-info h3 { font-size: 1.2rem; margin-bottom: 0.5rem; color: #333; }
+        .produto-info p { font-size: 0.9rem; color: var(--cor-texto-claro); margin-bottom: 1.5rem; flex-grow: 1; line-height: 1.5; }
+        .rodape-card { display: flex; align-items: center; justify-content: space-between; margin-top: auto; }
+        .preco { font-weight: 800; color: #d16b8a; font-size: 1.3rem; }
+        .btn-comprar { background-color: var(--cor-primaria); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.2s; }
+        .btn-comprar:hover { transform: scale(1.1); }
+
+        .carrinho-lateral { position: fixed; top: 0; right: -400px; width: 100%; max-width: 380px; height: 100vh; background: white; box-shadow: -5px 0 25px rgba(0,0,0,0.1); padding: 2rem; transition: right 0.4s; display: flex; flex-direction: column; z-index: 1000; }
+        .carrinho-lateral.aberto { right: 0; }
+        .carrinho-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f0f0f0; padding-bottom: 1.5rem; margin-bottom: 1.5rem; }
+        .fechar-carrinho { background: #f5f5f5; border: none; width: 35px; height: 35px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; }
+        .itens-carrinho { flex-grow: 1; overflow-y: auto; }
+        .item-carrinho { display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: #fafafa; border-radius: 12px; margin-bottom: 10px; border: 1px solid #eee; }
+        .btn-remover { background: #ffe5e5; border: none; color: #ff4c4c; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-weight: bold; }
+        .carrinho-footer { border-top: 2px solid #f0f0f0; padding-top: 1.5rem; margin-top: 1rem; }
+        .carrinho-total { display: flex; justify-content: space-between; font-weight: 800; font-size: 1.4rem; margin-bottom: 1.5rem; }
+        .btn-finalizar { background-color: #25D366; color: white; border: none; padding: 1.2rem; border-radius: 25px; font-weight: bold; cursor: pointer; width: 100%; font-size: 1.1rem; }
+
+        .floating-cart { position: fixed; bottom: 30px; right: 30px; background-color: white; border: none; border-radius: 50%; width: 65px; height: 65px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; cursor: pointer; box-shadow: 0 5px 20px rgba(0,0,0,0.15); z-index: 999; }
+        .cart-badge { position: absolute; top: -5px; right: -5px; background-color: #ff6b6b; color: white; border-radius: 50%; width: 26px; height: 26px; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 998; display: none; }
+        .overlay.ativo { display: block; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <header>
+        <img src="[https://craft-da-kali-api.onrender.com/imagens/logo.jpg](https://craft-da-kali-api.onrender.com/imagens/logo.jpg)" ...>
+        <h1>Craft da Kali</h1>
+        <p style="color:var(--cor-texto-claro); margin-bottom: 1.5rem;">@craft_da_kali</p>
+        <div class="bio-box">
+            ✨ Pixel Art, bottons, chaveiros, brincos, pulseiras e colares<br>📍 Extremoz, Ceará-Mirim e Zona Norte<br>🛵 Taxa a combinar<br>👇 Faça sua encomenda
+        </div>
+    </header>
+
+    <main>
+        <h2 class="section-title">🎁 Nossos Mimos</h2>
+
+        <div class="filtros" id="container-filtros">
+            <button class="btn-filtro ativo" onclick="filtrarProdutos('Todos')">Todos</button>
+            <button class="btn-filtro" onclick="filtrarProdutos('Hama Beads')">Hama Beads</button>
+            <button class="btn-filtro" onclick="filtrarProdutos('Bottons')">Bottons</button>
+            <button class="btn-filtro" onclick="filtrarProdutos('Pulseiras')">Pulseiras</button>
+            <button class="btn-filtro" onclick="filtrarProdutos('Brincos')">Brincos</button>
+            <button class="btn-filtro" onclick="filtrarProdutos('Chaveiros')">Chaveiros</button>
+            <button class="btn-filtro" onclick="filtrarProdutos('Outros')">Outros</button>
+        </div>
+
+        <div id="produtos-grid" class="produtos-grid"></div>
+    </main>
+
+    <div class="overlay" id="overlay" onclick="fecharCarrinho()"></div>
+    <div id="carrinho-lateral" class="carrinho-lateral">
+        <div class="carrinho-header"><h3>Seu Pedido</h3><button class="fechar-carrinho" id="btn-fechar-carrinho">✕</button></div>
+        <div class="itens-carrinho" id="itens-carrinho"></div>
+        <div class="carrinho-footer">
+            <div class="carrinho-total"><span>Total:</span><span id="total-carrinho">R$ 0,00</span></div>
+            <button class="btn-finalizar" onclick="finalizarCompra()">Enviar p/ WhatsApp</button>
+        </div>
+    </div>
+    <button id="btn-abrir-carrinho" class="floating-cart">🛒<div class="cart-badge" id="contador-carrinho">0</div></button>
+
+    <script>
+        let produtosDaAPI = [];
+        let carrinho = [];
+        let categoriaAtual = 'Todos';
+        const produtosGrid = document.getElementById('produtos-grid');
+
+        async function buscarProdutosDaAPI() {
+            try {
+               const resposta = await fetch('[https://craft-da-kali-api.onrender.com/produtos](https://craft-da-kali-api.onrender.com/produtos)');
+            } catch (erro) {
+                produtosGrid.innerHTML = '<p style="color:red; text-align:center; width:100%;">Erro ao conectar ao servidor.</p>';
+            }
+        }
+
+        window.filtrarProdutos = function(categoria) {
+            categoriaAtual = categoria;
+            document.querySelectorAll('.btn-filtro').forEach(btn => {
+                if(btn.innerText.trim() === categoria) btn.classList.add('ativo');
+                else btn.classList.remove('ativo');
+            });
+            renderizarProdutos();
+        }
+
+        function renderizarProdutos() {
+            produtosGrid.innerHTML = '';
+            const filtrados = categoriaAtual === 'Todos' ? produtosDaAPI : produtosDaAPI.filter(p => p.categoria === categoriaAtual);
+
+            if(filtrados.length === 0) {
+                produtosGrid.innerHTML = '<p style="text-align:center; width:100%; color:#777;">Nenhum produto encontrado.</p>';
+                return;
+            }
+
+            filtrados.forEach(produto => {
+                // Separa as imagens pela vírgula
+                const imagens = produto.imagem_url ? produto.imagem_url.split(',') : ['https://via.placeholder.com/400?text=Sem+Foto'];
+
+                // Monta o HTML do carrossel
+                let carrosselHTML = `<div class="carrossel">`;
+                imagens.forEach(imgUrl => {
+                    carrosselHTML += `<img src="${imgUrl.trim()}" alt="${produto.nome}" onerror="this.src='https://via.placeholder.com/400?text=Sem+Foto'">`;
+                });
+                carrosselHTML += `</div>`;
+
+                // Se tiver mais que uma imagem, mostra a dica "Deslize ➔"
+                if(imagens.length > 1) {
+                    carrosselHTML += `<div class="hint-arrastar">Deslize ➔</div>`;
+                }
+
+                const card = document.createElement('div');
+                card.className = 'produto-card';
+                card.innerHTML = `
+                    <div class="img-container">
+                        ${carrosselHTML}
+                    </div>
+                    <div class="produto-info">
+                        <span class="categoria-tag">${produto.categoria || 'Outros'}</span>
+                        <h3>${produto.nome}</h3>
+                        <p>${produto.descricao || 'Sem descrição'}</p>
+                        <div class="rodape-card">
+                            <span class="preco">R$ ${(produto.preco || 0).toFixed(2)}</span>
+                            <button class="btn-comprar" onclick="adicionarAoCarrinho(${produto.id})">+</button>
+                        </div>
+                    </div>
+                `;
+                produtosGrid.appendChild(card);
+            });
+        }
+
+        window.adicionarAoCarrinho = function(id) {
+            const p = produtosDaAPI.find(x => x.id === id);
+            if(p) { carrinho.push(p); atualizarInterfaceCarrinho(); abrirCarrinho(); }
+        }
+        window.removerDoCarrinho = function(i) { carrinho.splice(i, 1); atualizarInterfaceCarrinho(); }
+        function atualizarInterfaceCarrinho() {
+            const container = document.getElementById('itens-carrinho');
+            container.innerHTML = '';
+            let total = 0;
+            carrinho.forEach((item, i) => {
+                total += item.preco || 0;
+                container.innerHTML += `
+                    <div class="item-carrinho">
+                        <div><b>${item.nome}</b><br><span style="color:#d16b8a;">R$ ${(item.preco||0).toFixed(2)}</span></div>
+                        <button class="btn-remover" onclick="removerDoCarrinho(${i})">X</button>
+                    </div>
+                `;
+            });
+            document.getElementById('total-carrinho').innerText = `R$ ${total.toFixed(2)}`;
+            document.getElementById('contador-carrinho').innerText = carrinho.length;
+        }
+        window.abrirCarrinho = function() { document.getElementById('carrinho-lateral').classList.add('aberto'); document.getElementById('overlay').classList.add('ativo'); }
+        window.fecharCarrinho = function() { document.getElementById('carrinho-lateral').classList.remove('aberto'); document.getElementById('overlay').classList.remove('ativo'); }
+        window.finalizarCompra = function() {
+            if(!carrinho.length) return alert("Carrinho vazio!");
+            let msg = "Olá, Craft da Kali! 🌼 Minha encomenda:%0A%0A";
+            let t = 0;
+            carrinho.forEach(i => { msg += `- ${i.nome} (R$ ${(i.preco||0).toFixed(2)})%0A`; t += i.preco||0; });
+            msg += `%0A*Total:* R$ ${t.toFixed(2)}%0A_(Mais taxa de entrega)_`;
+            window.open(`https://wa.me/5584999999999?text=${msg}`, '_blank');
+        }
+
+        document.getElementById('btn-abrir-carrinho').addEventListener('click', abrirCarrinho);
+        document.getElementById('btn-fechar-carrinho').addEventListener('click', fecharCarrinho);
+        buscarProdutosDaAPI();
+    </script>
+</body>
+</html>
