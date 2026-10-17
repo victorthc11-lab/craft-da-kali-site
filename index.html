@@ -148,7 +148,7 @@
 
         async function buscarProdutosDaAPI() {
             try {
-               const resposta = await fetch('[https://craft-da-kali-api.onrender.com/produtos](https://craft-da-kali-api.onrender.com/produtos)');
+               const resposta = await fetch('https://craft-da-kali-api.onrender.com/produtos');
             } catch (erro) {
                 produtosGrid.innerHTML = '<p style="color:red; text-align:center; width:100%;">Erro ao conectar ao servidor.</p>';
             }
