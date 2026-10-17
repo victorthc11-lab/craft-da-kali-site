@@ -22,7 +22,7 @@
             box-shadow: 0 8px 20px rgba(0,0,0,0.08);
             margin-bottom: 1rem;
             border: 4px solid var(--cor-primaria);
-            object-fit: cover; /* <-- Adicione esta linha */
+            object-fit: cover;
         }
         .bio-box { background: rgba(255, 255, 255, 0.85); max-width: 450px; margin: 0 auto; padding: 1.5rem; border-radius: 20px; text-align: left; font-size: 0.95rem; line-height: 1.8; box-shadow: 0 4px 15px rgba(0,0,0,0.04); }
 
@@ -104,7 +104,6 @@
 <body>
 
     <header>
-        <header>
         <img src="https://craft-da-kali-api.onrender.com/imagens/logo.png" alt="Logo" style="width: 120px; border-radius: 50%;">
         <h1>Craft da Kali</h1>
         <p style="color:var(--cor-texto-claro); margin-bottom: 1.5rem;">@craft_da_kali</p>
@@ -148,7 +147,9 @@
 
         async function buscarProdutosDaAPI() {
             try {
-               const resposta = await fetch('https://craft-da-kali-api.onrender.com/produtos');
+                const resposta = await fetch('https://craft-da-kali-api.onrender.com/produtos');
+                produtosDaAPI = await resposta.json();
+                renderizarProdutos();
             } catch (erro) {
                 produtosGrid.innerHTML = '<p style="color:red; text-align:center; width:100%;">Erro ao conectar ao servidor.</p>';
             }
