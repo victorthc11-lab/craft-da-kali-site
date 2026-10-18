@@ -147,13 +147,14 @@
         let categoriaAtual = 'Todos';
         const produtosGrid = document.getElementById('produtos-grid');
 
-        async function buscarProdutosDaAPI() {
+       async function buscarProdutosDaAPI() {
+            produtosGrid.innerHTML = '<div style="text-align:center; grid-column: 1 / -1; padding: 3rem;"><h3 style="color: #777;">⏳ A preparar a vitrine...</h3><p style="color: #999; font-size: 0.9rem; margin-top: 10px;">A organizar os mimos, só um segundo!</p></div>';
             try {
                 const resposta = await fetch('https://craft-da-kali-api.onrender.com/produtos');
                 produtosDaAPI = await resposta.json();
                 renderizarProdutos();
             } catch (erro) {
-                produtosGrid.innerHTML = '<p style="color:red; text-align:center; width:100%;">Erro ao conectar ao servidor.</p>';
+                produtosGrid.innerHTML = '<p style="color:red; text-align:center; grid-column: 1 / -1;">Erro ao conectar ao servidor.</p>';
             }
         }
 
